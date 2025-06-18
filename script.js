@@ -1,5 +1,5 @@
 // --- Global Variables and Configuration ---
-const UPLOAD_BASE_URL = 'https://speech-backend-loo7.onrender.com';
+const UPLOAD_BASE_URL = 'http://127.0.0.1:5000'; // Base URL for your Flask backend
 let currentStep = 0;
 let prolificId = 'debug_participant_id'; // Default for local testing; will be overwritten by Prolific ID
 let mediaRecorder;
@@ -382,11 +382,10 @@ function stopRecording(taskType) {
     }
 }
 
-// --- UPDATED uploadAndContinue function for S3 Pre-signed URL flow ---
+// --- NEW uploadAndContinue function for Direct POST to backend ---
 async function uploadAndContinue(taskType) {
     if (!currentAudioBlob) {
-        getById('status', taskType).textContent = 'No recording found to upload. Please record first.';
-        getById('status', taskType).classList.add('error-message');
+        getById('status', taskType).textContent = 'No recording found to upload.';
         return;
     }
 
@@ -419,107 +418,46 @@ async function uploadAndContinue(taskType) {
     uploadNextButton.disabled = true;
     startButton.disabled = true;
     statusDisplay.textContent = `Uploading ${taskType} recording...`;
-    statusDisplay.classList.remove('error-message');
-    statusDisplay.classList.add('status-message');
-    console.log(`UPLOAD: Starting upload for task: ${taskType}`);
+    statusDisplay.classList.remove('error-message'); // Clear any previous error messages
+    statusDisplay.classList.add('status-message');    // Indicate progress
 
     try {
-        // --- Step 1: Request pre-signed URL from your backend ---
-        console.log("UPLOAD: Requesting presigned URL from:", `${UPLOAD_BASE_URL}/get-presigned-url`);
-        const presignedResponse = await fetch(`${UPLOAD_BASE_URL}/get-presigned-url`, {
+        const formData = new FormData();
+        formData.append('audio_data', currentAudioBlob, `${taskType}.webm`);
+        formData.append('participant_id', prolificId);
+        formData.append('task_type', taskType);
+        formData.append('duration_seconds', durationSeconds); // Include duration in form data
+
+        console.log('UPLOAD: Sending direct POST request to:', `${UPLOAD_BASE_URL}/upload_audio`);
+        const response = await fetch(`${UPLOAD_BASE_URL}/upload_audio`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                fileType: currentAudioBlob.type,
-                participantId: prolificId,
-                taskType: taskType,
-                durationSeconds: durationSeconds,
-            }),
+            body: formData
         });
 
-        if (!presignedResponse.ok) {
-            const errorData = await presignedResponse.json();
-            throw new Error(`Backend error requesting presigned URL: ${presignedResponse.status} - ${errorData.error || presignedResponse.statusText}`);
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || `Upload failed with status: ${response.status}`);
         }
 
-        const presignedResult = await presignedResponse.json();
-        const presignedUrl = presignedResult.presignedUrl;
-        const s3Key = presignedResult.s3Key;
-        const localFilePath = presignedResult.localFilePath; // Only present in local simulation mode
+        const result = await response.json();
+        console.log('UPLOAD: Success:', result.message);
+        statusDisplay.textContent = `Upload complete!`;
+        statusDisplay.classList.remove('error-message');
+        statusDisplay.classList.add('status-message');
 
-        updateStatus(`Pre-signed URL received. Uploading audio for ${taskType}...`);
-        console.log("UPLOAD: Received presigned URL:", presignedUrl);
-        console.log("UPLOAD: Target S3 Key/Local Path:", s3Key);
-
-        // --- Step 2: Upload audio directly to the pre-signed URL (S3 or local simulation) ---
-        let uploadResponse;
-        // Check if it's a dummy local URL (from simulate_local_audio_upload in backend)
-        if (presignedUrl.includes("localhost:5000/simulate_local_audio_upload")) {
-             console.log("UPLOAD: Performing local simulation upload...");
-             uploadResponse = await fetch(presignedUrl, {
-                 method: 'PUT', // The backend's simulate_local_audio_upload route handles PUT
-                 headers: {
-                     'Content-Type': currentAudioBlob.type,
-                 },
-                 body: currentAudioBlob,
-             });
-        } else {
-            console.log("UPLOAD: Performing actual S3 upload...");
-            // For actual S3 upload, PUT directly to the presigned URL
-            uploadResponse = await fetch(presignedUrl, {
-                method: 'PUT', // S3 presigned PUT URL requires PUT method
-                headers: {
-                    'Content-Type': currentAudioBlob.type, // Essential for S3 to correctly identify file
-                },
-                body: currentAudioBlob,
-            });
-        }
-
-        if (!uploadResponse.ok) {
-            const errorText = await uploadResponse.text(); // Get raw text for S3 errors
-            throw new Error(`Audio upload failed: ${uploadResponse.status} - ${errorText}`);
-        }
-
-        updateStatus(`Audio for ${taskType} uploaded successfully!`);
-        console.log(`UPLOAD SUCCESS: ${taskType} audio uploaded.`);
-
-        // --- Step 3: Notify backend about successful upload ---
-        updateStatus(`Notifying backend of successful upload for ${taskType}...`);
-        const confirmResponse = await fetch(`${UPLOAD_BASE_URL}/upload-complete`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                s3Key: s3Key, // The S3 key generated by backend
-                participantId: prolificId,
-                taskType: taskType,
-                durationSeconds: durationSeconds,
-                localFilePath: localFilePath // Send this for local confirmation
-            }),
-        });
-
-        if (!confirmResponse.ok) {
-            const errorData = await confirmResponse.json();
-            throw new Error(`Backend confirmation failed: ${confirmResponse.status} - ${errorData.error || confirmResponse.statusText}`);
-        }
-
-        updateStatus(`Upload process complete for ${taskType}!`);
-        console.log("UPLOAD: Confirmation received from backend.");
-
-        nextSection(); // Move to next section only on success
+        nextSection(); // Move to the next section only on successful upload
 
     } catch (error) {
+        console.error('UPLOAD: Error uploading:', error);
         statusDisplay.textContent = `Upload failed: ${error.message}`;
         statusDisplay.classList.add('error-message');
-        console.error(`UPLOAD ERROR: Process failed for ${taskType}:`, error);
+        statusDisplay.classList.remove('status-message'); // Remove success styling
     } finally {
         uploadNextButton.disabled = false;
         startButton.disabled = false;
     }
 }
+
 
 // --- Specific Task Event Listeners ---
 // Task 1: Reading
