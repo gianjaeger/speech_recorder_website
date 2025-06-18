@@ -1,5 +1,5 @@
 // --- Global Variables and Configuration ---
-const UPLOAD_BASE_URL = 'http://127.0.0.1:5000'; // Base URL for your Flask backend
+const UPLOAD_BASE_URL = 'https://your-backend-name.onrender.com';
 let currentStep = 0;
 let prolificId = 'debug_participant_id'; // Default for local testing; will be overwritten by Prolific ID
 let mediaRecorder;
