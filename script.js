@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     showSection(currentStep);
 
-    completionCodeSpan.textContent = `ABCD123-${prolificId}`;
+    completionCodeSpan.textContent = `C1G15BRN`;
 });
 
 // Consent Logic
