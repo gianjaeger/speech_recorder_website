@@ -9,16 +9,16 @@
 <body>
     <div class="container">
         <h1>Speech Characteristics</h1>
-        <p>Welcome to our research study investigating speech characteristics in adults with Autism Spectrum Disorder (ASD). Your participation is greatly appreciated and contributes to valuable research in this field. Please read through the information carefully and complete all sections.</p>
+        <p>Welcome to our research study investigating speech characteristics in adults. Your participation as a **neurotypical adult** is greatly appreciated and contributes to valuable research in this field. Please read through the information carefully and complete all sections.</p>
 
         <div id="consent-section" class="study-section">
             <h2>1. Informed Consent</h2>
             <p>Please read the following information carefully. By proceeding, you confirm your understanding and agreement to participate.</p>
 
-            <h3>Study Title: Speech Characteristics in Adults with Autism Spectrum Disorder</h3>
+            <h3>Study Title: Speech Characteristics in Neurotypical Adults for Autism Spectrum Disorder Research</h3>
 
             <h3>Purpose of the Research:</h3>
-            <p>This study aims to investigate differences and similarities in speech characteristics among adults with Autism Spectrum Disorder (ASD). By analyzing various aspects of spoken language, we hope to gain a better understanding of how speech patterns may relate to ASD and to develop potential objective measures for research purposes.</p>
+            <p>This study aims to investigate differences and similarities in speech characteristics among adults. By analyzing various aspects of spoken language, we hope to gain a better understanding of typical speech patterns to aid in broader research concerning Autism Spectrum Disorder (ASD). Your data will specifically contribute to the **neurotypical cohort** of this research.</p>
 
             <h3>What You Will Be Asked to Do:</h3>
             <ul>
@@ -123,50 +123,11 @@
                 </select>
                 <input type="text" id="environment_other" name="environment_other" placeholder="Please specify your environment" style="display:none; margin-top: 5px;">
 
-
-                <h3>ASD Diagnosis Details:</h3>
-                <label for="ageDiagnosed">At what age were you diagnosed with ASD? (in years)</label>
-                <input type="number" id="ageDiagnosed" name="ageDiagnosed" min="0" required>
-
-                <label for="howDiagnosisMade">How was the ASD diagnosis made?</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="how_diagnosis_made" value="medical_doctor" required> By a medical doctor (e.g., psychiatrist, neurologist)</label><br>
-                    <label><input type="radio" name="how_diagnosis_made" value="licensed_psychologist"> By a licensed psychologist</label><br>
-                    <label><input type="radio" name="how_diagnosis_made" value="specialist_clinic"> Through a specialist clinic (e.g., autism assessment centre)</label><br>
-                    <label><input type="radio" name="how_diagnosis_made" value="do_not_remember"> I do not remember</label><br>
-                    <label><input type="radio" name="how_diagnosis_made" value="other"> Other (please specify)</label>
-                </div>
-                <input type="text" id="how_diagnosis_made_other" name="how_diagnosis_made_other" placeholder="Please specify how diagnosis was made" style="display:none; margin-top: 5px;">
-
-
-                <div id="formal-assessment-section" style="display: none;">
-                    <label for="formalAssessmentTool">Was a formal assessment tool used? (e.g., ADOS, AQ, RAADS-R)</label>
-                    <div class="radio-group">
-                        <label><input type="radio" name="formal_assessment_tool_used" value="yes" required> Yes</label><br>
-                        <label><input type="radio" name="formal_assessment_tool_used" value="no"> No</label><br>
-                        <label><input type="radio" name="formal_assessment_tool_used" value="do_not_remember"> I do not remember</label><br>
-                        <label><input type="radio" name="formal_assessment_tool_used" value="prefer_not-disclose"> Prefer not to disclose</label>
-                    </div>
-                    <div id="formal-assessment-tool-specify" style="display: none; margin-top: 15px;">
-                        <label for="exactFormalTool">Please specify the exact tool(s) used:</label>
-                        <input type="text" id="exactFormalTool" name="exactFormalTool" placeholder="e.g., ADOS-2, AQ, RAADS-R" >
-                    </div>
-                </div>
-
-                <label for="autismSeverity">How would you describe the severity of your autism symptoms?</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="autism_severity" value="mild" required> Mild (little impact on daily functioning)</label><br>
-                    <label><input type="radio" name="autism_severity" value="moderate"> Moderate (some support needed)</label><br>
-                    <label><input type="radio" name="autism_severity" value="severe"> Severe (significant support needs)</label><br>
-                    <label><input type="radio" name="autism_severity" value="not_sure"> Not sure</label><br>
-                    <label><input type="radio" name="autism_severity" value="other"> Other (please specify)</label>
-                </div>
-                <input type="text" id="autism_severity_other" name="autism_severity_other" placeholder="Please specify severity" style="display:none; margin-top: 5px;">
-
-
-                <label for="coOccurringConditions">Please list any co-occurring conditions (e.g., ADHD, anxiety, depression, dyslexia, etc. if applicable):</label>
-                <textarea id="coOccurringConditions" name="coOccurringConditions" rows="3" placeholder="e.g., ADHD, Generalized Anxiety Disorder"></textarea>
-
+                <p style="font-size: 0.95em; color: #555; margin-bottom: 15px;">
+                    Although this study is for individuals without Autism Spectrum Disorder (ASD), it is important for us to account for any other mental health or neurological conditions you may have.
+                </p>
+                <label for="coOccurringConditions">Please list any other diagnosed mental health or neurological conditions you have (e.g., depression, anxiety, ADHD, dyslexia, etc. if applicable):</label>
+                <textarea id="coOccurringConditions" name="coOccurringConditions" rows="3" placeholder="e.g., Generalized Anxiety Disorder, ADHD"></textarea>
                 <button type="submit" id="submitSurveyButton">Submit and continue to task</button>
                 <p id="surveyStatus" class="status-message"></p>
             </form>
